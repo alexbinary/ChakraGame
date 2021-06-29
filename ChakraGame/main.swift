@@ -82,6 +82,41 @@ struct ChakraGame {
         
         // take in input
         
+        let numberOfAvailableInputSlots = board.numberOfAvailableInputSlots
+        
+        if numberOfAvailableInputSlots > 0 {
+        
+            let numberOfPossibleTakesByColumn = numberOfAvailableInputSlots
+            
+            for column in IntakeColumn.allCases {
+                
+                guard intakeSlotContents[column]!.values.filter({ $0 != .empty }).count > 0 else { continue }
+                
+                let possibleTakesInColumn = listPossibleTakes(in: column, takingAtMost: numberOfPossibleTakesByColumn)
+                
+                for take in possibleTakesInColumn {
+                    
+                    let possibleTargets = listPossibleInputTargets(forNumberOfGems: take.count ,on: board)
+                    
+                    for targets in possibleTargets {
+                        
+                        let permutations = listPermutations(mapping: take, to: targets)
+                        
+                        for permutation in permutations {
+                            
+                            moves.append(
+                                .takeGemsInInputSlots(
+                                    permutation.map {
+                                        (intakeSlot: IntakeSlot(intakeColumn: column, columnSlot: $0.in), inputSlot: $0.out)
+                                    }
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        
         // take in chakra
         
         // move gems
@@ -89,6 +124,21 @@ struct ChakraGame {
         // meditate
         
         return moves
+    }
+    
+    private func listPossibleTakes(in column: IntakeColumn, takingAtMost maxNumberOfTakes: Int) -> Set<Set<Slot>> {
+        
+        return []
+    }
+    
+    private func listPossibleInputTargets(forNumberOfGems numberOfGems: Int, on board: ChakraBoard) -> Set<Set<Slot>> {
+        
+        return []
+    }
+    
+    private func listPermutations(mapping inSlots: Set<Slot>, to outSlots: Set<Slot>) -> [[(in: Slot, out: Slot)]] {
+        
+        return []
     }
 }
 
@@ -121,12 +171,14 @@ struct IntakeSlot {
 struct ChakraBoard {
     
     let inputSlotContents: [Slot: SlotContent] = [
+        
         .one: .empty,
         .two: .empty,
         .three: .empty,
     ]
     
     let chakras: [Chakra] = [
+        
         Chakra(energy: .purple),
         Chakra(energy: .darkBlue),
         Chakra(energy: .lightBlue),
@@ -137,6 +189,11 @@ struct ChakraBoard {
     ]
     
     let blackZone: [Gem] = []
+    
+    var numberOfAvailableInputSlots: Int {
+        
+        inputSlotContents.values.filter { $0 == .empty } .count
+    }
 }
 
 enum Energy: CaseIterable {
