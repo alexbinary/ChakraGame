@@ -337,6 +337,28 @@ struct MayaSpace: Hashable {
 
 
 
+enum PlenitudeToken: Int, CaseIterable, CustomStringConvertible {
+    
+    
+    case one = 1
+    case two = 2
+    case three = 3
+    case four = 4
+    
+    
+    var description: String { "\(self.rawValue)" }
+}
+
+
+
+enum ChakraPointsStatus {
+    
+    case unknown
+    case known(PlenitudeToken)
+}
+
+
+
 enum Color: CaseIterable, CustomStringConvertible {
     
     
@@ -396,28 +418,6 @@ enum Color: CaseIterable, CustomStringConvertible {
         
         return Set<Color>(allButBlackOrdered)
     }
-}
-
-
-
-enum PlenitudeToken: Int, CaseIterable, CustomStringConvertible {
-    
-    
-    case one = 1
-    case two = 2
-    case three = 3
-    case four = 4
-    
-    
-    var description: String { "\(self.rawValue)" }
-}
-
-
-
-enum ChakraPointsStatus {
-    
-    case unknown
-    case known(PlenitudeToken)
 }
 
 
