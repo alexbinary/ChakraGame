@@ -29,6 +29,27 @@ struct ChakraGame {
         ],
     ]
     
+    
+    func printGame() {
+        
+        print("=== Karma ===")
+        
+        print("-------")
+        for slot in Slot.allCases {
+            
+            print("|")
+            for column in IntakeColumn.allCases {
+                
+                print("(\(intakeSlotContents[column]![slot]!))")
+                print("|")
+            }
+            print("-------")
+        }
+        
+        print("=============")
+    }
+    
+    
     init(forNumberOfPlayers numberOfPlayers: Int) {
     
         // create player boards
@@ -307,3 +328,9 @@ enum MoveDirection {
     case up
     case down
 }
+
+
+
+var game = ChakraGame(forNumberOfPlayers: 2)
+
+game.printGame()
