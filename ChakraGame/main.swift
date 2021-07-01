@@ -2,45 +2,26 @@
 import Foundation
 
 
-struct ChakraGame {
+struct Game {
     
-    private let boards: [ChakraBoard]
+    private let playerBoards: [PlayerBoard]
     
-    private let chakraPoints: [Energy: ChakraPoints]
+    private var lotusBoard: LotusBoard
     
-    private var universeBag: [Gem]
-    
-    private var intakeSlotContents: [IntakeColumn: [Slot: SlotContent]] = [
-        
-        .one: [
-            .one: .empty,
-            .two: .empty,
-            .three: .empty,
-        ],
-        .two: [
-            .one: .empty,
-            .two: .empty,
-            .three: .empty,
-        ],
-        .three: [
-            .one: .empty,
-            .two: .empty,
-            .three: .empty,
-        ],
-    ]
+    private var universeBag: [Energy]
     
     
     func printGame() {
         
-        print("=== Karma ===")
+        print("=== Lotus Board ===")
         
         print("-------")
         for slot in Slot.allCases {
             
             print("|")
-            for column in IntakeColumn.allCases {
+            for column in MayaColumn.allCases {
                 
-                print("(\(intakeSlotContents[column]![slot]!))")
+//                print("(\(intakeSlotContents[column]![slot]!))")
                 print("|")
             }
             print("-------")
@@ -50,54 +31,58 @@ struct ChakraGame {
     }
     
     
-    init(forNumberOfPlayers numberOfPlayers: Int) {
+    init(withNumberOfPlayers numberOfPlayers: Int) {
     
         // create player boards
         
-        self.boards = [ChakraBoard](repeating: ChakraBoard(), count: numberOfPlayers)
-     
-        // affect chakra points
+        self.playerBoards = [PlayerBoard](repeating: PlayerBoard(), count: numberOfPlayers)
         
-        var availableChakraPoints = ChakraPoints.allCases.reduce([]) { points, point in
-            points + [ChakraPoints](repeating: point, count: 2)
+        // create lotus board
+        
+        self.lotusBoard = LotusBoard()
+        
+        var availablePlenitudeTokens = PlenitudeToken.allCases.reduce([]) { tokens, token in
+            tokens + [PlenitudeToken](repeating: token, count: 2)
         }
         
-        var chakraPoints: [Energy: ChakraPoints] = [:]
-        for energy in Energy.all(includingBlack: false) {
-            availableChakraPoints.shuffle()
-            chakraPoints[energy] = availableChakraPoints.popLast()!
+        for color in Color.all(includingBlack: false) {
+            
+            availablePlenitudeTokens.shuffle()
+            let token = availablePlenitudeTokens.popLast()!
+            lotusBoard.set(token, on: color)
         }
-        
-        self.chakraPoints = chakraPoints
         
         // configure universe bag
         
-        self.universeBag = Energy.all(includingBlack: true).reduce([]) { (bag, energy) in
+        self.universeBag = Color.all(includingBlack: true).reduce([]) { (bag, color) in
             
-            bag + [Gem](repeating: Gem(energy: energy), count: 3 * numberOfPlayers)
+            bag + [Energy](repeating: Energy(color: color), count: 3 * numberOfPlayers)
         }
         
         //
         
-        self.refillIntakeSlots()
+        self.refillMayaSpaces()
     }
     
-    private mutating func refillIntakeSlots() {
+    
+    private mutating func refillMayaSpaces() {
         
-        for column in IntakeColumn.allCases {
+        for column in MayaColumn.allCases {
             for slot in Slot.allCases {
                 
-                if (intakeSlotContents[column]![slot]! == .empty) {
+                let mayaSlot = MayaSlot(mayaColumn: column, columnSlot: slot)
+                if (lotusBoard.energy(on: mayaSlot) == nil) {
                     
                     universeBag.shuffle()
-                    guard let gem = universeBag.popLast() else { return }
-                    intakeSlotContents[column]![slot] = .gem(gem)
+                    guard let energy = universeBag.popLast() else { return }
+                    lotusBoard.put(energy, on: mayaSlot)
                 }
             }
         }
     }
     
-    private func listPossibleMoves(for board: ChakraBoard) -> [GameMove] {
+    
+    private func listPossibleMoves(for board: PlayerBoard) -> [GameMove] {
         
         var moves: [GameMove] = []
         
@@ -156,12 +141,12 @@ struct ChakraGame {
         return moves
     }
     
-    private func listPossibleTakes(in column: IntakeColumn) -> Set<Set<Slot>> {
+    private func listPossibleTakes(in column: MayaColumn) -> Set<Set<Slot>> {
         
         return []
     }
     
-    private func listPossibleInputTargets(forNumberOfGems numberOfGems: Int, on board: ChakraBoard) -> Set<Set<Slot>> {
+    private func listPossibleInputTargets(forNumberOfGems numberOfGems: Int, on board: PlayerBoard) -> Set<Set<Slot>> {
         
         return []
     }
@@ -171,9 +156,85 @@ struct ChakraGame {
         return []
     }
     
-    private func listPossibleTargets(for gems: [Gem], on board: ChakraBoard) -> [(chakra: Chakra, slot: Slot)] {
+    private func listPossibleTargets(for gems: [Energy], on board: PlayerBoard) -> [(chakra: Chakra, slot: Slot)] {
         
         return []
+    }
+}
+
+
+
+struct LotusBoard {
+    
+    
+    private var karmaSpaces: [Color: PlenitudeToken] = [:]
+    
+    private var mayaSpaces: [MayaColumn: [Slot: SlotContent]] = [
+        
+        .one: [
+            .one: .empty,
+            .two: .empty,
+            .three: .empty,
+        ],
+        .two: [
+            .one: .empty,
+            .two: .empty,
+            .three: .empty,
+        ],
+        .three: [
+            .one: .empty,
+            .two: .empty,
+            .three: .empty,
+        ],
+    ]
+    
+    
+    public mutating func set(_ plenitudeToken: PlenitudeToken, on color: Color) {
+        
+        self.karmaSpaces[color] = plenitudeToken
+    }
+    
+    
+    public func energy(on mayaSlot: MayaSlot) -> Energy? {
+        
+        switch self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]! {
+        
+        case .empty:
+            return nil
+        case .energy(let energy):
+            return energy
+        }
+    }
+    
+    
+    public func isEmpty(_ mayaSlot: MayaSlot) -> Bool {
+        
+        return energy(on: mayaSlot) == nil
+    }
+    
+    
+    public mutating func put(_ energy: Energy, on mayaSlot: MayaSlot) {
+        
+        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = .energy(energy)
+    }
+    
+    
+    public mutating func take(_ energy: Energy, on mayaSlot: MayaSlot) -> Energy? {
+        
+        let content = self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]!
+        var takenEnergy: Energy?
+        
+        switch content {
+        
+        case .empty:
+            takenEnergy = nil
+        case .energy(let energy):
+            takenEnergy = energy
+        }
+        
+        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = .empty
+        
+        return takenEnergy
     }
 }
 
@@ -187,23 +248,23 @@ enum Slot: CaseIterable {
 enum SlotContent: Equatable {
     
     case empty
-    case gem(Gem)
+    case energy(Energy)
 }
 
-enum IntakeColumn: CaseIterable {
+enum MayaColumn: CaseIterable {
     
     case one
     case two
     case three
 }
 
-struct IntakeSlot: Hashable {
+struct MayaSlot: Hashable {
     
-    let intakeColumn: IntakeColumn
+    let mayaColumn: MayaColumn
     let columnSlot: Slot
 }
 
-struct ChakraBoard {
+struct PlayerBoard {
     
     let inputSlotContents: [Slot: SlotContent] = [
         
@@ -214,24 +275,26 @@ struct ChakraBoard {
     
     let chakras: [Chakra] = [
         
-        Chakra(energy: .purple),
-        Chakra(energy: .darkBlue),
-        Chakra(energy: .lightBlue),
-        Chakra(energy: .green),
-        Chakra(energy: .yellow),
-        Chakra(energy: .orange),
-        Chakra(energy: .red),
+        Chakra(color: .purple),
+        Chakra(color: .darkBlue),
+        Chakra(color: .lightBlue),
+        Chakra(color: .green),
+        Chakra(color: .yellow),
+        Chakra(color: .orange),
+        Chakra(color: .red),
     ]
     
-    let blackZone: [Gem] = []
+    let blackZone: [Energy] = []
     
     var numberOfAvailableInputSlots: Int {
         
         inputSlotContents.values.filter { $0 == .empty } .count
     }
+    
+    var availableInspirationTokens = 5
 }
 
-enum Energy: CaseIterable {
+enum Color: CaseIterable {
     
     case purple
     case darkBlue
@@ -242,16 +305,16 @@ enum Energy: CaseIterable {
     case red
     case black
     
-    static func all(includingBlack: Bool) -> Set<Energy> {
-        var energies = Set<Energy>(self.allCases)
+    static func all(includingBlack: Bool) -> Set<Color> {
+        var colors = Set<Color>(self.allCases)
         if (!includingBlack) {
-            energies.remove(.black)
+            colors.remove(.black)
         }
-        return energies
+        return colors
     }
 }
 
-enum ChakraPoints: Int, CaseIterable {
+enum PlenitudeToken: Int, CaseIterable {
     
     case one = 1
     case two = 2
@@ -262,17 +325,17 @@ enum ChakraPoints: Int, CaseIterable {
 enum ChakraPointsStatus {
     
     case unknown
-    case known(ChakraPoints)
+    case known(PlenitudeToken)
 }
 
-struct Gem: Equatable {
+struct Energy: Equatable {
     
-    let energy: Energy
+    let color: Color
 }
 
 struct Chakra {
     
-    let energy: Energy
+    let color: Color
     let points: ChakraPointsStatus = .unknown
     let slotContents: [Slot: SlotContent] = [
         .one: .empty,
@@ -280,44 +343,44 @@ struct Chakra {
         .three: .empty,
     ]
     var completed: Bool {
-        return slotContents[.one] == .gem(Gem(energy: energy))
-            && slotContents[.two] == .gem(Gem(energy: energy))
-            && slotContents[.three] == .gem(Gem(energy: energy))
+        return slotContents[.one] == .energy(Energy(color: color))
+            && slotContents[.two] == .energy(Energy(color: color))
+            && slotContents[.three] == .energy(Energy(color: color))
     }
 }
 
 enum GameMove {
     
-    case takeGemsInInputSlots([(intakeSlot: IntakeSlot, inputSlot: Slot)])
-    case takeGemsInChakra([(intakeSlot: IntakeSlot, chakra: Chakra, slot: Slot)])
-    case meditate(Energy?)
-    case moveGems(GemMove)
+    case takeEnergyInInputSlots([(intakeSlot: MayaSlot, inputSlot: Slot)])
+    case takeEnergyInChakra([(intakeSlot: MayaSlot, chakra: Chakra, slot: Slot)])
+    case meditate(Color?)
+    case moveGems(EnergyMove)
 }
 
-struct GemMove {
+struct EnergyMove {
 
-    let unitMoves: [GemUnitMove]
+    let unitMoves: [EnergyUnitMove]
     
-    static let allAllowedMoves: [GemMove] = [
-        GemMove(unitMoves: [
-            GemUnitMove(direction: .down, count: 3)
+    static let allAllowedMoves: [EnergyMove] = [
+        EnergyMove(unitMoves: [
+            EnergyUnitMove(direction: .down, count: 3)
         ]),
-        GemMove(unitMoves: [
-            GemUnitMove(direction: .down, count: 1),
-            GemUnitMove(direction: .down, count: 1),
-            GemUnitMove(direction: .down, count: 1)
+        EnergyMove(unitMoves: [
+            EnergyUnitMove(direction: .down, count: 1),
+            EnergyUnitMove(direction: .down, count: 1),
+            EnergyUnitMove(direction: .down, count: 1)
         ]),
-        GemMove(unitMoves: [
-            GemUnitMove(direction: .down, count: 1),
-            GemUnitMove(direction: .down, count: 2)
+        EnergyMove(unitMoves: [
+            EnergyUnitMove(direction: .down, count: 1),
+            EnergyUnitMove(direction: .down, count: 2)
         ]),
-        GemMove(unitMoves: [
-            GemUnitMove(direction: .up, count: 2)
+        EnergyMove(unitMoves: [
+            EnergyUnitMove(direction: .up, count: 2)
         ])
     ]
 }
 
-struct GemUnitMove {
+struct EnergyUnitMove {
     
     let direction: MoveDirection
     let count: Int
@@ -331,6 +394,6 @@ enum MoveDirection {
 
 
 
-var game = ChakraGame(forNumberOfPlayers: 2)
+var game = Game(withNumberOfPlayers: 2)
 
 game.printGame()
