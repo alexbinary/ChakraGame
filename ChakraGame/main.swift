@@ -25,7 +25,7 @@ struct Game {
         
         self.playerBoards = [PlayerBoard](repeating: PlayerBoard(), count: numberOfPlayers)
         
-        // create lotus board
+        // create lotus board, affect plenitude tokens, and fill maya spaces
         
         self.lotusBoard = LotusBoard()
         
@@ -33,7 +33,7 @@ struct Game {
             tokens + [PlenitudeToken](repeating: token, count: 2)
         }
         
-        for color in Color.all(includingBlack: false) {
+        for color in Color.allButBlack {
             
             availablePlenitudeTokens.shuffle()
             let token = availablePlenitudeTokens.popLast()!
@@ -42,7 +42,7 @@ struct Game {
         
         // configure universe bag
         
-        self.universeBag = Color.all(includingBlack: true).reduce([]) { (bag, color) in
+        self.universeBag = Color.allIncludingBlack.reduce([]) { (bag, color) in
             
             bag + [Energy](repeating: Energy(color: color), count: 3 * numberOfPlayers)
         }
@@ -374,19 +374,27 @@ enum Color: CaseIterable, CustomStringConvertible {
     }
     
     
-    static func all(includingBlack: Bool) -> Set<Color> {
-    
-        var colors = Set<Color>(self.allCases)
-        if (!includingBlack) {
-            colors.remove(.black)
-        }
-        return colors
+    static var allIncludingBlackOrdered: [Color] {
+        
+        return [ .purple, .darkBlue, .lightBlue, .green, .yellow, .orange, .red, .black ]
     }
     
     
     static var allButBlackOrdered: [Color] {
         
-        return [ .purple, .darkBlue, .lightBlue, .green, .yellow, .orange, .red ]
+        return allIncludingBlackOrdered.filter { $0 != .black }
+    }
+    
+    
+    static var allIncludingBlack: Set<Color> {
+        
+        return Set<Color>(allIncludingBlackOrdered)
+    }
+    
+    
+    static var allButBlack: Set<Color> {
+        
+        return Set<Color>(allButBlackOrdered)
     }
 }
 
