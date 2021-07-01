@@ -130,7 +130,40 @@ struct Game {
     }
     
     
-    private func listPossibleTakes(in column: MayaFlow) -> Set<Set<Slot>> {
+    private func listPossibleTakeEnergyActions() -> Set<TakeEnergyAction> {
+        
+        return MayaFlow.allCases.reduce(Set<TakeEnergyAction>()) { actions, flow in
+            
+            actions.union(listPossibleTakeEnergyActions(in: flow))
+        }
+    }
+    
+    
+    private func listPossibleTakeEnergyActions(in flow: MayaFlow) -> Set<TakeEnergyAction> {
+        
+//        public static var allCombinations: Set<TakeEnergyAction> {
+//
+//            var combinations = Set<TakeEnergyAction>()
+//
+//            for takeSlot1 in [true, false] {
+//                for takeSlot2 in [true, false] {
+//                    for takeSlot3 in [true, false] {
+//
+//                        var slotsToTake = Set<MayaSlot>()
+//
+//                        if takeSlot1 { slotsToTake.insert(.slotOne) }
+//                        if takeSlot2 { slotsToTake.insert(.slotTwo) }
+//                        if takeSlot3 { slotsToTake.insert(.slotThree) }
+//
+//                        let action = TakeEnergyAction(mayaFlow: flow, mayaSlots: slotsToTake)
+//
+//                        combinations.insert(action)
+//                    }
+//                }
+//            }
+//
+//            return combinations
+//        }
         
         return []
     }
@@ -196,17 +229,17 @@ struct LotusBoard {
     
     private var mayaSpaces: [MayaSpace: Energy?] = [
         
-        MayaSpace(flow: .one, slot: .one): nil,
-        MayaSpace(flow: .one, slot: .two): nil,
-        MayaSpace(flow: .one, slot: .three): nil,
+        MayaSpace(flow: .one, slot: .slotOne): nil,
+        MayaSpace(flow: .one, slot: .slotTwo): nil,
+        MayaSpace(flow: .one, slot: .slotThree): nil,
         
-        MayaSpace(flow: .two, slot: .one): nil,
-        MayaSpace(flow: .two, slot: .two): nil,
-        MayaSpace(flow: .two, slot: .three): nil,
+        MayaSpace(flow: .two, slot: .slotOne): nil,
+        MayaSpace(flow: .two, slot: .slotTwo): nil,
+        MayaSpace(flow: .two, slot: .slotThree): nil,
         
-        MayaSpace(flow: .three, slot: .one): nil,
-        MayaSpace(flow: .three, slot: .two): nil,
-        MayaSpace(flow: .three, slot: .three): nil,
+        MayaSpace(flow: .three, slot: .slotOne): nil,
+        MayaSpace(flow: .three, slot: .slotTwo): nil,
+        MayaSpace(flow: .three, slot: .slotThree): nil,
     ]
     
     
@@ -305,9 +338,9 @@ enum Slot: CaseIterable {
 
 enum MayaSlot: CaseIterable {
     
-    case one
-    case two
-    case three
+    case slotOne
+    case slotTwo
+    case slotThree
 }
 
 
@@ -449,9 +482,18 @@ struct Chakra {
 
 enum PlayerAction {
     
-    case receiveEnergy
+    case receiveEnergy(TakeEnergyAction)
     case channelEnergy
     case meditate
+}
+
+
+
+struct TakeEnergyAction: Hashable {
+    
+    
+    private let mayaFlow: MayaFlow
+    private let mayaSlots: Set<MayaSlot>
 }
 
 
@@ -493,6 +535,42 @@ enum MoveDirection {
     
     case up
     case down
+}
+
+
+
+enum Combinatorics {
+    
+    
+    public static func combinations<T>(of set: Set<T>) -> Set<Set<T>> {
+        
+        if set.count == 1 {
+         
+            return Set<Set<T>>([set])
+            
+        } else {
+            
+            var allCombinations = Set<Set<T>>()
+            
+            var diminishedSet = set
+            let firstItem = diminishedSet.removeFirst()
+           
+            for combinationOfDiminishedSet in combinations(of: diminishedSet) {
+                
+                allCombinations.insert(
+                    Set<T>([firstItem])
+                )
+                allCombinations.insert(
+                    combinationOfDiminishedSet.union(Set<T>([firstItem]))
+                )
+                allCombinations.insert(
+                    combinationOfDiminishedSet
+                )
+            }
+            
+            return allCombinations
+        }
+    }
 }
 
 
