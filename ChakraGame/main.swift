@@ -169,22 +169,22 @@ struct LotusBoard {
     
     private var karmaSpaces: [Color: PlenitudeToken] = [:]
     
-    private var mayaSpaces: [MayaColumn: [Slot: SlotContent]] = [
+    private var mayaSpaces: [MayaColumn: [Slot: Energy?]] = [
         
         .one: [
-            .one: .empty,
-            .two: .empty,
-            .three: .empty,
+            .one: nil,
+            .two: nil,
+            .three: nil,
         ],
         .two: [
-            .one: .empty,
-            .two: .empty,
-            .three: .empty,
+            .one: nil,
+            .two: nil,
+            .three: nil,
         ],
         .three: [
-            .one: .empty,
-            .two: .empty,
-            .three: .empty,
+            .one: nil,
+            .two: nil,
+            .three: nil,
         ],
     ]
     
@@ -197,13 +197,7 @@ struct LotusBoard {
     
     public func energy(on mayaSlot: MayaSlot) -> Energy? {
         
-        switch self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]! {
-        
-        case .empty:
-            return nil
-        case .energy(let energy):
-            return energy
-        }
+        return self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]!
     }
     
     
@@ -215,26 +209,17 @@ struct LotusBoard {
     
     public mutating func put(_ energy: Energy, on mayaSlot: MayaSlot) {
         
-        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = .energy(energy)
+        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = energy
     }
     
     
     public mutating func take(_ energy: Energy, on mayaSlot: MayaSlot) -> Energy? {
         
-        let content = self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]!
-        var takenEnergy: Energy?
+        let energy = self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]!
         
-        switch content {
+        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = nil
         
-        case .empty:
-            takenEnergy = nil
-        case .energy(let energy):
-            takenEnergy = energy
-        }
-        
-        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = .empty
-        
-        return takenEnergy
+        return energy
     }
 }
 
