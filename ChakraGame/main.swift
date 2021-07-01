@@ -70,9 +70,9 @@ struct Game {
     }
     
     
-    private func listPossibleMoves(for board: PlayerBoard) -> [GameMove] {
+    private func listPossibleActions(for board: PlayerBoard) -> [PlayerAction] {
         
-        var moves: [GameMove] = []
+        var possibleActions: [PlayerAction] = []
         
 //        // list possible gem takes
 //        
@@ -126,7 +126,7 @@ struct Game {
 //        
 //        // meditate
         
-        return moves
+        return possibleActions
     }
     
     
@@ -434,12 +434,11 @@ struct Chakra {
 
 
 
-enum GameMove {
+enum PlayerAction {
     
-    case takeEnergyInInputSlots([(intakeSlot: MayaSlot, inputSlot: Slot)])
-    case takeEnergyInChakra([(intakeSlot: MayaSlot, chakra: Chakra, slot: Slot)])
-    case meditate(Color?)
-    case moveGems(EnergyMove)
+    case receivedEnergy
+    case channelEnergy
+    case meditate
 }
 
 
