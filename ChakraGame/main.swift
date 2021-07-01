@@ -156,6 +156,39 @@ struct Game {
 
 
 
+struct PlayerBoard {
+    
+    
+    let inputSlotContents: [Slot: SlotContent] = [
+        
+        .one: .empty,
+        .two: .empty,
+        .three: .empty,
+    ]
+    
+    let chakras: [Chakra] = [
+        
+        Chakra(color: .purple),
+        Chakra(color: .darkBlue),
+        Chakra(color: .lightBlue),
+        Chakra(color: .green),
+        Chakra(color: .yellow),
+        Chakra(color: .orange),
+        Chakra(color: .red),
+    ]
+    
+    let blackZone: [Energy] = []
+    
+    var numberOfAvailableInputSlots: Int {
+        
+        inputSlotContents.values.filter { $0 == .empty } .count
+    }
+    
+    var availableInspirationTokens = 5
+}
+
+
+
 struct LotusBoard {
     
     
@@ -295,38 +328,6 @@ struct MayaSlot: Hashable {
     
     let mayaColumn: MayaColumn
     let columnSlot: Slot
-}
-
-
-
-struct PlayerBoard {
-    
-    let inputSlotContents: [Slot: SlotContent] = [
-        
-        .one: .empty,
-        .two: .empty,
-        .three: .empty,
-    ]
-    
-    let chakras: [Chakra] = [
-        
-        Chakra(color: .purple),
-        Chakra(color: .darkBlue),
-        Chakra(color: .lightBlue),
-        Chakra(color: .green),
-        Chakra(color: .yellow),
-        Chakra(color: .orange),
-        Chakra(color: .red),
-    ]
-    
-    let blackZone: [Energy] = []
-    
-    var numberOfAvailableInputSlots: Int {
-        
-        inputSlotContents.values.filter { $0 == .empty } .count
-    }
-    
-    var availableInspirationTokens = 5
 }
 
 
