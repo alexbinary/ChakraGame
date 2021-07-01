@@ -55,10 +55,10 @@ struct Game {
     
     private mutating func refillMayaSpaces() {
         
-        for column in MayaColumn.allCases {
-            for slot in Slot.allCases {
+        for flow in MayaFlow.allCases {
+            for slot in MayaSlot.allCases {
                 
-                let mayaSlot = MayaSlot(mayaColumn: column, columnSlot: slot)
+                let mayaSlot = MayaSpace(flow: flow, slot: slot)
                 if (lotusBoard.energy(on: mayaSlot) == nil) {
                     
                     universeBag.shuffle()
@@ -130,7 +130,7 @@ struct Game {
     }
     
     
-    private func listPossibleTakes(in column: MayaColumn) -> Set<Set<Slot>> {
+    private func listPossibleTakes(in column: MayaFlow) -> Set<Set<Slot>> {
         
         return []
     }
@@ -194,23 +194,19 @@ struct LotusBoard {
     
     private var karmaSpaces: [Color: PlenitudeToken] = [:]
     
-    private var mayaSpaces: [MayaColumn: [Slot: Energy?]] = [
+    private var mayaSpaces: [MayaSpace: Energy?] = [
         
-        .one: [
-            .one: nil,
-            .two: nil,
-            .three: nil,
-        ],
-        .two: [
-            .one: nil,
-            .two: nil,
-            .three: nil,
-        ],
-        .three: [
-            .one: nil,
-            .two: nil,
-            .three: nil,
-        ],
+        MayaSpace(flow: .one, slot: .one): nil,
+        MayaSpace(flow: .one, slot: .two): nil,
+        MayaSpace(flow: .one, slot: .three): nil,
+        
+        MayaSpace(flow: .two, slot: .one): nil,
+        MayaSpace(flow: .two, slot: .two): nil,
+        MayaSpace(flow: .two, slot: .three): nil,
+        
+        MayaSpace(flow: .three, slot: .one): nil,
+        MayaSpace(flow: .three, slot: .two): nil,
+        MayaSpace(flow: .three, slot: .three): nil,
     ]
     
     
@@ -238,14 +234,14 @@ struct LotusBoard {
         print(" ----- Maya -----")
         print(" |              |")
         
-        for slot in Slot.allCases {
+        for slot in MayaSlot.allCases {
             
             print(" ", terminator: "")
-            for column in MayaColumn.allCases {
+            for flow in MayaFlow.allCases {
             
                 print("|", terminator: "")
                 
-                if let energy = energy(on: MayaSlot(mayaColumn: column, columnSlot: slot)) {
+                if let energy = energy(on: MayaSpace(flow: flow, slot: slot)) {
                     print(" \(energy.color) ", terminator: "")
                 } else {
                     print(" -- ", terminator: "")
@@ -268,29 +264,29 @@ struct LotusBoard {
     }
     
     
-    public func energy(on mayaSlot: MayaSlot) -> Energy? {
+    public func energy(on mayaSpace: MayaSpace) -> Energy? {
         
-        return self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]!
+        return self.mayaSpaces[mayaSpace] ?? nil
     }
     
     
-    public func isEmpty(_ mayaSlot: MayaSlot) -> Bool {
+    public func isEmpty(_ mayaSlot: MayaSpace) -> Bool {
         
         return energy(on: mayaSlot) == nil
     }
     
     
-    public mutating func put(_ energy: Energy, on mayaSlot: MayaSlot) {
+    public mutating func put(_ energy: Energy, on mayaSpace: MayaSpace) {
         
-        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = energy
+        self.mayaSpaces[mayaSpace] = energy
     }
     
     
-    public mutating func take(_ energy: Energy, on mayaSlot: MayaSlot) -> Energy? {
+    public mutating func take(_ energy: Energy, on mayaSpace: MayaSpace) -> Energy? {
         
-        let energy = self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot]!
+        let energy = self.mayaSpaces[mayaSpace] ?? nil
         
-        self.mayaSpaces[mayaSlot.mayaColumn]![mayaSlot.columnSlot] = nil
+        self.mayaSpaces[mayaSpace] = nil
         
         return energy
     }
@@ -307,15 +303,7 @@ enum Slot: CaseIterable {
 
 
 
-enum SlotContent: Equatable {
-    
-    case empty
-    case energy(Energy)
-}
-
-
-
-enum MayaColumn: CaseIterable {
+enum MayaSlot: CaseIterable {
     
     case one
     case two
@@ -324,10 +312,27 @@ enum MayaColumn: CaseIterable {
 
 
 
-struct MayaSlot: Hashable {
+enum SlotContent: Equatable {
     
-    let mayaColumn: MayaColumn
-    let columnSlot: Slot
+    case empty
+    case energy(Energy)
+}
+
+
+
+enum MayaFlow: CaseIterable {
+    
+    case one
+    case two
+    case three
+}
+
+
+
+struct MayaSpace: Hashable {
+    
+    let flow: MayaFlow
+    let slot: MayaSlot
 }
 
 
