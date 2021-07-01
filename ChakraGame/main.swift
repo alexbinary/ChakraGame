@@ -180,10 +180,28 @@ struct LotusBoard {
         print("=== Lotus Board ===")
         
         print("")
-        print("---- Maya ------")
-        print("|              |")
+        print(" ----- Karma -----")
+        print("")
+        
+        for color in Color.allButBlackOrdered {
+            
+            print("       ", terminator: "")
+            print("\(color): ", terminator: "")
+            if let points = karmaSpaces[color] {
+                print("\(points)", terminator: "")
+            } else {
+                print("-", terminator: "")
+            }
+            print("")
+        }
+        
+        print("")
+        print(" ----- Maya -----")
+        print(" |              |")
         
         for slot in Slot.allCases {
+            
+            print(" ", terminator: "")
             for column in MayaColumn.allCases {
             
                 print("|", terminator: "")
@@ -196,12 +214,12 @@ struct LotusBoard {
             }
             
             print("|")
-            print("|    |    |    |")
+            print(" |    |    |    |")
         }
         
-        print("----------------")
+        print(" ----------------")
         print("")
-        print("================")
+        print("===================")
     }
     
     
@@ -342,17 +360,29 @@ enum Color: CaseIterable, CustomStringConvertible {
         }
         return colors
     }
+    
+    
+    static var allButBlackOrdered: [Color] {
+        
+        return [ .purple, .darkBlue, .lightBlue, .green, .yellow, .orange, .red ]
+    }
 }
 
 
 
-enum PlenitudeToken: Int, CaseIterable {
+enum PlenitudeToken: Int, CaseIterable, CustomStringConvertible {
+    
     
     case one = 1
     case two = 2
     case three = 3
     case four = 4
+    
+    
+    var description: String { "\(self.rawValue)" }
 }
+
+
 
 enum ChakraPointsStatus {
     
