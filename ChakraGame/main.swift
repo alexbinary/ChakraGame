@@ -80,53 +80,62 @@ struct ChakraGame {
         
         var moves: [GameMove] = []
         
-        // take in input
-        
-        let numberOfAvailableInputSlots = board.numberOfAvailableInputSlots
-        
-        if numberOfAvailableInputSlots > 0 {
-        
-            let numberOfPossibleTakesByColumn = numberOfAvailableInputSlots
-            
-            for column in IntakeColumn.allCases {
-                
-                guard intakeSlotContents[column]!.values.filter({ $0 != .empty }).count > 0 else { continue }
-                
-                let possibleTakesInColumn = listPossibleTakes(in: column, takingAtMost: numberOfPossibleTakesByColumn)
-                
-                for take in possibleTakesInColumn {
-                    
-                    let possibleTargets = listPossibleInputTargets(forNumberOfGems: take.count ,on: board)
-                    
-                    for targets in possibleTargets {
-                        
-                        let permutations = listPermutations(mapping: take, to: targets)
-                        
-                        for permutation in permutations {
-                            
-                            moves.append(
-                                .takeGemsInInputSlots(
-                                    permutation.map {
-                                        (intakeSlot: IntakeSlot(intakeColumn: column, columnSlot: $0.in), inputSlot: $0.out)
-                                    }
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        
-        // take in chakra
-        
-        // move gems
-        
-        // meditate
+//        // list possible gem takes
+//        
+//        var possibleTakes: Set<Set<IntakeSlot>> = []
+//        
+//        for column in IntakeColumn.allCases {
+//            
+//            let possibleTakesInColumn = listPossibleTakes(in: column)
+//            
+//            possibleTakes.formUnion(
+//                possibleTakesInColumn.map { take in
+//                    Set<IntakeSlot>(take.map { slot in
+//                        IntakeSlot(intakeColumn: column, columnSlot: slot)
+//                    })
+//                }
+//            )
+//        }
+//        
+//        // list possible targets for each take
+//        
+//        let numberOfAvailableInputSlots = board.numberOfAvailableInputSlots
+//        
+//        if numberOfAvailableInputSlots > 0 {
+//        
+//            let numberOfPossibleTakesByColumn = numberOfAvailableInputSlots
+//            
+//            
+//        }
+//        
+//        let possibleTargets = listPossibleInputTargets(forNumberOfGems: take.count ,on: board)
+//        
+//        for targets in possibleTargets {
+//            
+//            let permutations = listPermutations(mapping: take, to: targets)
+//            
+//            possibleTakes.app
+//            
+//            for permutation in permutations {
+//                
+//                moves.append(
+//                    .takeGemsInInputSlots(
+//                        permutation.map {
+//                            (intakeSlot: IntakeSlot(intakeColumn: column, columnSlot: $0.in), inputSlot: $0.out)
+//                        }
+//                    )
+//                )
+//            }
+//        }
+//        
+//        // list possible gems moves
+//        
+//        // meditate
         
         return moves
     }
     
-    private func listPossibleTakes(in column: IntakeColumn, takingAtMost maxNumberOfTakes: Int) -> Set<Set<Slot>> {
+    private func listPossibleTakes(in column: IntakeColumn) -> Set<Set<Slot>> {
         
         return []
     }
@@ -137,6 +146,11 @@ struct ChakraGame {
     }
     
     private func listPermutations(mapping inSlots: Set<Slot>, to outSlots: Set<Slot>) -> [[(in: Slot, out: Slot)]] {
+        
+        return []
+    }
+    
+    private func listPossibleTargets(for gems: [Gem], on board: ChakraBoard) -> [(chakra: Chakra, slot: Slot)] {
         
         return []
     }
@@ -162,7 +176,7 @@ enum IntakeColumn: CaseIterable {
     case three
 }
 
-struct IntakeSlot {
+struct IntakeSlot: Hashable {
     
     let intakeColumn: IntakeColumn
     let columnSlot: Slot
