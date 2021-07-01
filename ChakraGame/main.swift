@@ -2,7 +2,9 @@
 import Foundation
 
 
+
 struct Game {
+    
     
     private let playerBoards: [PlayerBoard]
     
@@ -127,20 +129,24 @@ struct Game {
         return moves
     }
     
+    
     private func listPossibleTakes(in column: MayaColumn) -> Set<Set<Slot>> {
         
         return []
     }
+    
     
     private func listPossibleInputTargets(forNumberOfGems numberOfGems: Int, on board: PlayerBoard) -> Set<Set<Slot>> {
         
         return []
     }
     
+    
     private func listPermutations(mapping inSlots: Set<Slot>, to outSlots: Set<Slot>) -> [[(in: Slot, out: Slot)]] {
         
         return []
     }
+    
     
     private func listPossibleTargets(for gems: [Energy], on board: PlayerBoard) -> [(chakra: Chakra, slot: Slot)] {
         
@@ -257,6 +263,8 @@ struct LotusBoard {
     }
 }
 
+
+
 enum Slot: CaseIterable {
     
     case one
@@ -264,11 +272,15 @@ enum Slot: CaseIterable {
     case three
 }
 
+
+
 enum SlotContent: Equatable {
     
     case empty
     case energy(Energy)
 }
+
+
 
 enum MayaColumn: CaseIterable {
     
@@ -277,11 +289,15 @@ enum MayaColumn: CaseIterable {
     case three
 }
 
+
+
 struct MayaSlot: Hashable {
     
     let mayaColumn: MayaColumn
     let columnSlot: Slot
 }
+
+
 
 struct PlayerBoard {
     
@@ -390,10 +406,14 @@ enum ChakraPointsStatus {
     case known(PlenitudeToken)
 }
 
+
+
 struct Energy: Equatable {
     
     let color: Color
 }
+
+
 
 struct Chakra {
     
@@ -411,6 +431,8 @@ struct Chakra {
     }
 }
 
+
+
 enum GameMove {
     
     case takeEnergyInInputSlots([(intakeSlot: MayaSlot, inputSlot: Slot)])
@@ -418,6 +440,8 @@ enum GameMove {
     case meditate(Color?)
     case moveGems(EnergyMove)
 }
+
+
 
 struct EnergyMove {
 
@@ -442,11 +466,15 @@ struct EnergyMove {
     ]
 }
 
+
+
 struct EnergyUnitMove {
     
     let direction: MoveDirection
     let count: Int
 }
+
+
 
 enum MoveDirection {
     
