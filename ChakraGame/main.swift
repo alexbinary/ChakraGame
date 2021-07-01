@@ -441,7 +441,7 @@ struct Chakra {
 
 enum PlayerAction {
     
-    case receivedEnergy
+    case receiveEnergy
     case channelEnergy
     case meditate
 }
