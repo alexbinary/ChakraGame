@@ -11,23 +11,9 @@ struct Game {
     private var universeBag: [Energy]
     
     
-    func printGame() {
+    func printState() {
         
-        print("=== Lotus Board ===")
-        
-        print("-------")
-        for slot in Slot.allCases {
-            
-            print("|")
-            for column in MayaColumn.allCases {
-                
-//                print("(\(intakeSlotContents[column]![slot]!))")
-                print("|")
-            }
-            print("-------")
-        }
-        
-        print("=============")
+        lotusBoard.printState()
     }
     
     
@@ -189,6 +175,36 @@ struct LotusBoard {
     ]
     
     
+    func printState() {
+        
+        print("=== Lotus Board ===")
+        
+        print("")
+        print("---- Maya ------")
+        print("|              |")
+        
+        for slot in Slot.allCases {
+            for column in MayaColumn.allCases {
+            
+                print("|", terminator: "")
+                
+                if let energy = energy(on: MayaSlot(mayaColumn: column, columnSlot: slot)) {
+                    print(" \(energy.color) ", terminator: "")
+                } else {
+                    print(" -- ", terminator: "")
+                }
+            }
+            
+            print("|")
+            print("|    |    |    |")
+        }
+        
+        print("----------------")
+        print("")
+        print("================")
+    }
+    
+    
     public mutating func set(_ plenitudeToken: PlenitudeToken, on color: Color) {
         
         self.karmaSpaces[color] = plenitudeToken
@@ -279,7 +295,10 @@ struct PlayerBoard {
     var availableInspirationTokens = 5
 }
 
-enum Color: CaseIterable {
+
+
+enum Color: CaseIterable, CustomStringConvertible {
+    
     
     case purple
     case darkBlue
@@ -290,7 +309,33 @@ enum Color: CaseIterable {
     case red
     case black
     
+    
+    var description: String {
+        
+        switch self {
+        
+        case .purple:
+            return "PU"
+        case .darkBlue:
+            return "DB"
+        case .lightBlue:
+            return "LB"
+        case .green:
+            return "GR"
+        case .yellow:
+            return "YE"
+        case .orange:
+            return "OR"
+        case .red:
+            return "RE"
+        case .black:
+            return "BL"
+        }
+    }
+    
+    
     static func all(includingBlack: Bool) -> Set<Color> {
+    
         var colors = Set<Color>(self.allCases)
         if (!includingBlack) {
             colors.remove(.black)
@@ -298,6 +343,8 @@ enum Color: CaseIterable {
         return colors
     }
 }
+
+
 
 enum PlenitudeToken: Int, CaseIterable {
     
@@ -381,4 +428,4 @@ enum MoveDirection {
 
 var game = Game(withNumberOfPlayers: 2)
 
-game.printGame()
+game.printState()
