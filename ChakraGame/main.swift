@@ -424,7 +424,7 @@ struct Chakra {
         .two: .empty,
         .three: .empty,
     ]
-    var completed: Bool {
+    var harmonized: Bool {
         return slotContents[.one] == .energy(Energy(color: color))
             && slotContents[.two] == .energy(Energy(color: color))
             && slotContents[.three] == .energy(Energy(color: color))
