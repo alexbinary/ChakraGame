@@ -331,7 +331,7 @@ struct LotusBoard {
     }
     
     
-    public mutating func take(_ energy: Energy, on mayaSpace: MayaSpace) -> Energy? {
+    public mutating func takeEnergy(on mayaSpace: MayaSpace) -> Energy? {
         
         let energy = self.mayaSpaces[mayaSpace] ?? nil
         
