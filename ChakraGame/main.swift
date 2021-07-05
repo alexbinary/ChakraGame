@@ -499,9 +499,13 @@ enum Color: CaseIterable, CustomStringConvertible {
 
 
 
-struct Energy: Equatable {
+struct Energy: Equatable, CustomStringConvertible {
+    
     
     let color: Color
+    
+    
+    var description: String { "♦︎\(color)" }
 }
 
 
