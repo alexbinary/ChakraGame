@@ -283,19 +283,21 @@ struct LotusBoard {
         
         for slot in MayaSlot.allCases {
             
-            print(" ", terminator: "")
+            print(" \(slot)", terminator: "")
             for flow in MayaFlow.allCases {
             
-                print("|", terminator: "")
+                print("", terminator: "")
                 
                 if let energy = energy(on: MayaSpace(flow: flow, slot: slot)) {
                     print(" \(energy.color) ", terminator: "")
                 } else {
                     print(" -- ", terminator: "")
                 }
+                
+                print("|", terminator: "")
             }
+            print("")
             
-            print("|")
             print(" |    |    |    |")
         }
         
