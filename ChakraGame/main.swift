@@ -70,6 +70,53 @@ struct Game {
     }
     
     
+    private func listPossibleTakeEnergyActions() -> Set<TakeEnergyAction> {
+        
+        return MayaFlow.allCases.reduce(Set<TakeEnergyAction>()) { actions, flow in
+            
+            actions.union(listPossibleTakeEnergyActions(in: flow))
+        }
+    }
+    
+    
+    private func listPossibleTakeEnergyActions(in flow: MayaFlow) -> Set<TakeEnergyAction> {
+        
+        let allMayaSpacesCombinationsInFlow = Combinatorics.combinations(of: MayaSpace.allSpaces(in: flow))
+
+        var mayaSpacesCombinationsWithCorrespondingEnergies: [Set<MayaSpace>: [Energy]] = allMayaSpacesCombinationsInFlow.reduce(into: [:]) { dict, spaces in
+            
+            let energies: [Energy?] = spaces.map { space in lotusBoard.energy(on: space) }
+            
+            if !energies.contains(nil) {
+            
+                dict[spaces] = energies.map { $0! }
+            }
+        }
+        
+        // remove combinations that take several energies of the same color
+        
+        mayaSpacesCombinationsWithCorrespondingEnergies.filterInPlace { spaces, energies in
+            
+            Set<Color>(energies.map { $0.color }).count == energies.count
+        }
+        
+        // if flow contains one or more black energies, remove takes that do not include a black energy
+        
+        if MayaSpace.allSpaces(in: flow).map({ lotusBoard.energy(on: $0)?.color }).contains(.black) {
+            
+            mayaSpacesCombinationsWithCorrespondingEnergies.filterInPlace { spaces, energies in
+                
+                energies.map { $0.color } .contains(.black)
+            }
+        }
+        
+        return Set<TakeEnergyAction>(mayaSpacesCombinationsWithCorrespondingEnergies.map { spaces, energies in
+            
+            TakeEnergyAction(mayaSpaces: spaces)
+        })
+    }
+    
+    
     private func listPossibleActions(for board: PlayerBoard) -> [PlayerAction] {
         
         var possibleActions: [PlayerAction] = []
@@ -127,45 +174,6 @@ struct Game {
 //        // meditate
         
         return possibleActions
-    }
-    
-    
-    private func listPossibleTakeEnergyActions() -> Set<TakeEnergyAction> {
-        
-        return MayaFlow.allCases.reduce(Set<TakeEnergyAction>()) { actions, flow in
-            
-            actions.union(listPossibleTakeEnergyActions(in: flow))
-        }
-    }
-    
-    
-    private func listPossibleTakeEnergyActions(in flow: MayaFlow) -> Set<TakeEnergyAction> {
-        
-//        public static var allCombinations: Set<TakeEnergyAction> {
-//
-//            var combinations = Set<TakeEnergyAction>()
-//
-//            for takeSlot1 in [true, false] {
-//                for takeSlot2 in [true, false] {
-//                    for takeSlot3 in [true, false] {
-//
-//                        var slotsToTake = Set<MayaSlot>()
-//
-//                        if takeSlot1 { slotsToTake.insert(.slotOne) }
-//                        if takeSlot2 { slotsToTake.insert(.slotTwo) }
-//                        if takeSlot3 { slotsToTake.insert(.slotThree) }
-//
-//                        let action = TakeEnergyAction(mayaFlow: flow, mayaSlots: slotsToTake)
-//
-//                        combinations.insert(action)
-//                    }
-//                }
-//            }
-//
-//            return combinations
-//        }
-        
-        return []
     }
     
     
@@ -595,6 +603,17 @@ enum MoveDirection {
     
     case up
     case down
+}
+
+
+
+extension Dictionary {
+    
+    
+    public mutating func filterInPlace(_ isIncluded: (Dictionary<Key, Value>.Element) throws -> Bool) rethrows {
+        
+        self = try self.filter(isIncluded)
+    }
 }
 
 
