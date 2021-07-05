@@ -336,11 +336,25 @@ enum Slot: CaseIterable {
 
 
 
-enum MayaSlot: CaseIterable {
+enum MayaSlot: CaseIterable, CustomStringConvertible {
+    
     
     case slotOne
     case slotTwo
     case slotThree
+    
+    
+    var description: String {
+        
+        switch self {
+        case .slotOne:
+            return "1"
+        case .slotTwo:
+            return "2"
+        case .slotThree:
+            return "3"
+        }
+    }
 }
 
 
@@ -353,11 +367,25 @@ enum SlotContent: Equatable {
 
 
 
-enum MayaFlow: CaseIterable {
+enum MayaFlow: CaseIterable, CustomStringConvertible {
+    
     
     case one
     case two
     case three
+    
+    
+    var description: String {
+        
+        switch self {
+        case .one:
+            return "1"
+        case .two:
+            return "2"
+        case .three:
+            return "3"
+        }
+    }
 }
 
 
