@@ -245,15 +245,15 @@ struct LotusBoard {
     
     func printState() {
         
-        print("=== Lotus Board ===")
+        print("==== Lotus Board =====")
         
         print("")
-        print(" ----- Karma -----")
+        print("  ----- Karma -----")
         print("")
         
         for color in Color.allButBlackOrdered {
             
-            print("       ", terminator: "")
+            print("        ", terminator: "")
             print("\(color): ", terminator: "")
             if let points = karmaSpaces[color] {
                 print("\(points)", terminator: "")
@@ -264,8 +264,8 @@ struct LotusBoard {
         }
         
         print("")
-        print(" ----- Maya -----")
-        print(" |              |")
+        print(" ------ Maya -------")
+        print(" |                 |")
         
         print(" |", terminator: "")
         for slot in MayaSlot.allCases {
@@ -275,11 +275,11 @@ struct LotusBoard {
                 print(" ", terminator: "")
             }
             print(slot, terminator: "")
-            print(" ", terminator: "")
+            print("  ", terminator: "")
         }
         print("|")
         
-        print(" |              |")
+        print(" |                 |")
         
         for slot in MayaSlot.allCases {
             
@@ -289,21 +289,21 @@ struct LotusBoard {
                 print("", terminator: "")
                 
                 if let energy = energy(on: MayaSpace(flow: flow, slot: slot)) {
-                    print(" \(energy.color) ", terminator: "")
+                    print(" \(energy) ", terminator: "")
                 } else {
-                    print(" -- ", terminator: "")
+                    print(" --- ", terminator: "")
                 }
                 
                 print("|", terminator: "")
             }
             print("")
             
-            print(" |    |    |    |")
+            print(" |     |     |     |")
         }
         
-        print(" ----------------")
+        print(" -------------------")
         print("")
-        print("===================")
+        print("======================")
     }
     
     
