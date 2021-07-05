@@ -229,17 +229,17 @@ struct LotusBoard {
     
     private var mayaSpaces: [MayaSpace: Energy?] = [
         
-        MayaSpace(flow: .one, slot: .slotOne): nil,
-        MayaSpace(flow: .one, slot: .slotTwo): nil,
-        MayaSpace(flow: .one, slot: .slotThree): nil,
+        MayaSpace(flow: .one, slot: .one): nil,
+        MayaSpace(flow: .one, slot: .two): nil,
+        MayaSpace(flow: .one, slot: .three): nil,
         
-        MayaSpace(flow: .two, slot: .slotOne): nil,
-        MayaSpace(flow: .two, slot: .slotTwo): nil,
-        MayaSpace(flow: .two, slot: .slotThree): nil,
+        MayaSpace(flow: .two, slot: .one): nil,
+        MayaSpace(flow: .two, slot: .two): nil,
+        MayaSpace(flow: .two, slot: .three): nil,
         
-        MayaSpace(flow: .three, slot: .slotOne): nil,
-        MayaSpace(flow: .three, slot: .slotTwo): nil,
-        MayaSpace(flow: .three, slot: .slotThree): nil,
+        MayaSpace(flow: .three, slot: .one): nil,
+        MayaSpace(flow: .three, slot: .two): nil,
+        MayaSpace(flow: .three, slot: .three): nil,
     ]
     
     
@@ -339,19 +339,19 @@ enum Slot: CaseIterable {
 enum MayaSlot: CaseIterable, CustomStringConvertible {
     
     
-    case slotOne
-    case slotTwo
-    case slotThree
+    case one
+    case two
+    case three
     
     
     var description: String {
         
         switch self {
-        case .slotOne:
+        case .one:
             return "1"
-        case .slotTwo:
+        case .two:
             return "2"
-        case .slotThree:
+        case .three:
             return "3"
         }
     }
