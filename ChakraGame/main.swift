@@ -549,9 +549,7 @@ enum PlayerAction {
 
 struct TakeEnergyAction: Hashable {
     
-    
-    private let mayaFlow: MayaFlow
-    private let mayaSlots: Set<MayaSlot>
+    let mayaSpaces: Set<MayaSpace>
 }
 
 
