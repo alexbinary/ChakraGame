@@ -547,9 +547,13 @@ enum PlayerAction {
 
 
 
-struct TakeEnergyAction: Hashable {
+struct TakeEnergyAction: Hashable, CustomStringConvertible {
+    
     
     let mayaSpaces: Set<MayaSpace>
+    
+    
+    var description: String { "Take \(mayaSpaces)" }
 }
 
 
