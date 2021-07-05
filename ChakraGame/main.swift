@@ -406,10 +406,20 @@ enum MayaFlow: CaseIterable, CustomStringConvertible {
 
 
 
-struct MayaSpace: Hashable {
+struct MayaSpace: Hashable, CustomStringConvertible {
+    
     
     let flow: MayaFlow
     let slot: MayaSlot
+    
+    
+    public static func allSpaces(in flow: MayaFlow) -> Set<MayaSpace> {
+    
+        Set<MayaSpace>(MayaSlot.allCases.map { MayaSpace(flow: flow, slot: $0) })
+    }
+    
+    
+    var description: String { "Maya(\(flow);\(slot))" }
 }
 
 
