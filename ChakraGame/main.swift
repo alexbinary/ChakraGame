@@ -267,6 +267,20 @@ struct LotusBoard {
         print(" ----- Maya -----")
         print(" |              |")
         
+        print(" |", terminator: "")
+        for slot in MayaSlot.allCases {
+        
+            print("  ", terminator: "")
+            if slot != .one {
+                print(" ", terminator: "")
+            }
+            print(slot, terminator: "")
+            print(" ", terminator: "")
+        }
+        print("|")
+        
+        print(" |              |")
+        
         for slot in MayaSlot.allCases {
             
             print(" ", terminator: "")
